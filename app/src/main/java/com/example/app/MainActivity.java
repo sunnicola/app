@@ -15,6 +15,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
    public static final String EXTRA_MESSAGE = "au.edu.unsw.infs3634.beers.MESSAGE";
 
+   //BOOLEAN TO DETERMINE WHICH LAYOUT IS USED
     Boolean inWide;
 
     private RecyclerView mRecyclerView;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new CoinAdapter(Coin.getCoins(), listener);
         mRecyclerView.setAdapter(mAdapter);
 
+
+        //LAYOUT CHOSEN DEPENDS ON WHETHER SCROLVIEW2 IS IN VIEW (AKA 900DP> LAYOUT)
         inWide = findViewById(R.id.scrollView2) != null;
 
         Intent intent = getIntent();
