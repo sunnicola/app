@@ -1,91 +1,67 @@
 package com.example.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
+import com.example.app.Entities.Coin;
+
 import java.text.NumberFormat;
 
-
 public class DetailFragment extends Fragment {
-
+    public static final String ARG_ITEM_ID = "item_id";
     private Coin mCoin;
-    private TextView mName;
-    private TextView mSymbol;
-    private TextView mValue;
-    private TextView mChange1h;
-    private TextView mChange24h;
-    private TextView mChange7d;
-    private TextView mMarketcap;
-    private TextView mVolume;
-    private ImageView mSearch;
 
-    public DetailFragment() {
-        // Required empty public constructor
-    }
-
+    public DetailFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(getArguments().containsKey(ARG_ITEM_ID)) {
+            mCoin = Coin.getCoin(getArguments().getString(ARG_ITEM_ID));
+            this.getActivity().setTitle(mCoin.getName());
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_detail, container, false);
-        int position = 0;
-        // need return statement
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mName = v.findViewById(R.id.tvName);
-        mSymbol = v.findViewById(R.id.tvSymbol);
-        mValue = v.findViewById(R.id.tvValueField);
-        mChange1h = v.findViewById(R.id.tvChange1hField);
-        mChange24h = v.findViewById(R.id.tvChange24hField);
-        mChange7d = v.findViewById(R.id.tvChange7dField);
-        mMarketcap = v.findViewById(R.id.tvMarketcapField);
-        mVolume = v.findViewById(R.id.tvVolumeField);
-        mSearch = v.findViewById(R.id.ivSearch);
+        if(mCoin != null) {
+            NumberFormat formatter = NumberFormat.getCurrencyInstance();
+            ((TextView) rootView.findViewById(R.id.tvID)).setText(mCoin.getId());
+            ((TextView) rootView.findViewById(R.id.tvSymbol)).setText(mCoin.getSymbol());
+            ((TextView) rootView.findViewById(R.id.tvName)).setText(mCoin.getName());
+            ((TextView) rootView.findViewById(R.id.tvNameId)).setText(mCoin.getNameid());
+            ((TextView) rootView.findViewById(R.id.tvRank)).setText(mCoin.getRank());
+            ((TextView) rootView.findViewById(R.id.tvPrice)).setText(formatter.format(mCoin.getPriceUsd()));
+            ((TextView) rootView.findViewById(R.id.tvChange1hField)).setText(String.valueOf(mCoin.getPercentChange1h()) + " %");
+            ((TextView) rootView.findViewById(R.id.tvChange24hField)).setText(String.valueOf(mCoin.getPercentChange24h()) + " %");
+            ((TextView) rootView.findViewById(R.id.tvChange7dField)).setText(String.valueOf(mCoin.getPercentChange7d()) + " %");
+            ((TextView) rootView.findViewById(R.id.tvMarketcapField)).setText(formatter.format(mCoin.getMarketCapUsd()));
+            ((TextView) rootView.findViewById(R.id.tvVolumeField)).setText(formatter.format(mCoin.getVolume24()));
+            ((TextView) rootView.findViewById(R.id.tvVolume24A)).setText(formatter.format(mCoin.getVolume24a()));
+            ((TextView) rootView.findViewById(R.id.tvTSupply)).setText(formatter.format(mCoin.getCsupply()));
+            ((TextView) rootView.findViewById(R.id.tvMSupply)).setText(formatter.format(mCoin.getTsupply()));
+            ((TextView) rootView.findViewById(R.id.tvMSupply)).setText(formatter.format(mCoin.getMsupply()));
 
-        //BOOLEAN LOGIC TO DETERMINE WHICH VIEW LAYOUT DEPENDING ON DEVICE
-
-        boolean wide = false;
-        if (this.getArguments() != null){
-            wide = getArguments().getBoolean("inWide", true);
+            ((ImageView) rootView.findViewById(R.id.ivSearch)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchCoin(mCoin.getName());
+                }
+            });
         }
-
-        if (!wide){
-            Intent intent = getActivity().getIntent();
-            position = intent.getIntExtra("position", 0);
-            mCoin = Coin.getCoins().get(position);
-        } else {
-            mCoin = Coin.getCoins().get(getArguments().getInt("position"));
-        }
-
-        NumberFormat formatter = NumberFormat.getCurrencyInstance();
-       // setTitle(mCoin.getName());
-        mName.setText(mCoin.getName());
-        mSymbol.setText(mCoin.getSymbol());
-        mValue.setText(formatter.format(mCoin.getValue()));
-        mChange1h.setText(String.valueOf(mCoin.getChange1h()) + " %");
-        mChange24h.setText(String.valueOf(mCoin.getChange24h() + " %"));
-        mChange7d.setText(String.valueOf(mCoin.getChange1h() + " %"));
-        mMarketcap.setText(formatter.format(mCoin.getMarketcap()));
-        mVolume.setText(formatter.format(mCoin.getVolume()));
-      //  mSearch.setOnClickListener(searchCoin(mCoin.getName()););
-        return v;
+        return rootView;
     }
-
 
     private void searchCoin(String name) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=" + name));
