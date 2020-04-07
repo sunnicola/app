@@ -39,10 +39,11 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         Gson gson = new Gson();
-        CoinLoreResponse jsonString = gson.fromJson(CoinLoreResponse.json, CoinLoreResponse.class);
-        List<Coin> coin = jsonString.getData();
+        //CoinLoreResponse jsonString = gson.fromJson(CoinLoreResponse.json, CoinLoreResponse.class);
+        //List<Coin> coin = jsonString.getData();
 
-        final RecyclerView.Adapter mAdapter = new CoinAdapter(this, coin, mTwoPane);
+        final RecyclerView.Adapter mAdapter = new CoinAdapter(this, new ArrayList<Coin>() , mTwoPane);
+        //final RecyclerView.Adapter mAdapter = new CoinAdapter(this, coin, mTwoPane);
         mRecyclerView.setAdapter(mAdapter);
 
 
